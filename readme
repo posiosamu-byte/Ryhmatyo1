@@ -1,0 +1,29 @@
+Projektityön Dokumentaatio
+
+Työ on tehty Visual Studio Codella, GitHubilla ja PHPmyAdminilla.
+Projektin Järjestys on tehty Teamsissa ja Trellossa.
+
+Projektin jäsenten työnjako
+
+Saku:
+
+Samu: Dokumentaatio ja Tietokanta
+
+Jasu: 
+
+--------------------------------------------------
+
+Asennusohjeet
+
+1. lataa tiedostot githubista
+
+2. lataa dockerengine
+
+3. lataa Visual Studio/Code
+
+4. käynnistä docker terminaalista
+
+5. käynnistä ohjelma
+
+--------------------------------------------------
+
