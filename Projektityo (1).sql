@@ -3,13 +3,17 @@
 -- https://www.phpmyadmin.net/
 --
 -- Isäntä: db
--- Luontiaika: 05.11.2026 klo 09:52
+-- Luontiaika: 09.11.2026 klo 06:08
 -- Palvelimen versio: 8.0.46
 -- PHP-versio 8.3.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `Varaus`, `Tilan_varuste`, `Kurssi`, `Laite`, `Tila_Luokka`, `Kayttaja`;
+SET FOREIGN_KEY_CHECKS = 1;
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -43,8 +47,8 @@ CREATE TABLE `Kayttaja` (
 
 CREATE TABLE `Kurssi` (
   `Kurssi_id` int NOT NULL,
-  `nimi` int NOT NULL,
-  `kurssikoodi` int NOT NULL,
+  `nimi` varchar(255) NOT NULL,
+  `kurssikoodi` varchar(50) NOT NULL,
   `vastaava_opettaja_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -63,10 +67,22 @@ CREATE TABLE `Laite` (
 -- --------------------------------------------------------
 
 --
--- Rakenne taululle `Tila/Luokka`
+-- Rakenne taululle `Tilan_varuste`
 --
 
-CREATE TABLE `Tila/Luokka` (
+CREATE TABLE `Tilan_varuste` (
+  `tila_id` int NOT NULL,
+  `varuste_id` int NOT NULL,
+  `maara` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Rakenne taululle `Tila_Luokka`
+--
+
+CREATE TABLE `Tila_Luokka` (
   `Tila_id` int NOT NULL,
   `tilan_numero` int NOT NULL,
   `kapasiteetti` int NOT NULL,
@@ -78,29 +94,17 @@ CREATE TABLE `Tila/Luokka` (
 -- --------------------------------------------------------
 
 --
--- Rakenne taululle `Tilan_varuste`
---
-
-CREATE TABLE `Tilan_varuste` (
-  `tila_id` int NOT NULL,
-  `varuste_id` int NOT NULL,
-  `maara` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
 -- Rakenne taululle `Varaus`
 --
 
 CREATE TABLE `Varaus` (
   `Varaus_id` int NOT NULL,
-  `alkuaika` time(6) NOT NULL,
-  `loppuaika` time(6) NOT NULL,
+  `alkuaika` datetime NOT NULL,
+  `loppuaika` datetime NOT NULL,
   `tila_status` varchar(255) NOT NULL,
-  `kuvaus/tarkoitus` varchar(255) NOT NULL,
-  `Tila` varchar(255) NOT NULL,
-  `kayttaja` varchar(255) NOT NULL
+  `kuvaus_tarkoitus` varchar(255) NOT NULL,
+  `Tila` int NOT NULL,
+  `kayttaja` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -111,13 +115,15 @@ CREATE TABLE `Varaus` (
 -- Indeksit taulukolle `Kayttaja`
 --
 ALTER TABLE `Kayttaja`
-  ADD PRIMARY KEY (`Kayttaja_id`);
+  ADD PRIMARY KEY (`Kayttaja_id`),
+  ADD UNIQUE KEY `uq_kayttaja_sahkoposti` (`sahkoposti`);
 
 --
 -- Indeksit taulukolle `Kurssi`
 --
 ALTER TABLE `Kurssi`
-  ADD PRIMARY KEY (`Kurssi_id`);
+  ADD PRIMARY KEY (`Kurssi_id`),
+  ADD KEY `fk_kurssi_opettaja` (`vastaava_opettaja_id`);
 
 --
 -- Indeksit taulukolle `Laite`
@@ -126,16 +132,25 @@ ALTER TABLE `Laite`
   ADD PRIMARY KEY (`varuste_id`);
 
 --
--- Indeksit taulukolle `Tila/Luokka`
+-- Indeksit taulukolle `Tilan_varuste`
 --
-ALTER TABLE `Tila/Luokka`
+ALTER TABLE `Tilan_varuste`
+  ADD PRIMARY KEY (`tila_id`,`varuste_id`),
+  ADD KEY `fk_tilanvaruste_laite` (`varuste_id`);
+
+--
+-- Indeksit taulukolle `Tila_Luokka`
+--
+ALTER TABLE `Tila_Luokka`
   ADD PRIMARY KEY (`Tila_id`);
 
 --
 -- Indeksit taulukolle `Varaus`
 --
 ALTER TABLE `Varaus`
-  ADD PRIMARY KEY (`Varaus_id`);
+  ADD PRIMARY KEY (`Varaus_id`),
+  ADD KEY `fk_varaus_tila` (`Tila`),
+  ADD KEY `fk_varaus_kayttaja` (`kayttaja`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -160,9 +175,9 @@ ALTER TABLE `Laite`
   MODIFY `varuste_id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `Tila/Luokka`
+-- AUTO_INCREMENT for table `Tila_Luokka`
 --
-ALTER TABLE `Tila/Luokka`
+ALTER TABLE `Tila_Luokka`
   MODIFY `Tila_id` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -170,6 +185,30 @@ ALTER TABLE `Tila/Luokka`
 --
 ALTER TABLE `Varaus`
   MODIFY `Varaus_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- Rajoitteet vedostauluille
+--
+
+--
+-- Rajoitteet taululle `Kurssi`
+--
+ALTER TABLE `Kurssi`
+  ADD CONSTRAINT `fk_kurssi_opettaja` FOREIGN KEY (`vastaava_opettaja_id`) REFERENCES `Kayttaja` (`Kayttaja_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Rajoitteet taululle `Tilan_varuste`
+--
+ALTER TABLE `Tilan_varuste`
+  ADD CONSTRAINT `fk_tilanvaruste_laite` FOREIGN KEY (`varuste_id`) REFERENCES `Laite` (`varuste_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_tilanvaruste_tila` FOREIGN KEY (`tila_id`) REFERENCES `Tila_Luokka` (`Tila_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Rajoitteet taululle `Varaus`
+--
+ALTER TABLE `Varaus`
+  ADD CONSTRAINT `fk_varaus_kayttaja` FOREIGN KEY (`kayttaja`) REFERENCES `Kayttaja` (`Kayttaja_id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_varaus_tila` FOREIGN KEY (`Tila`) REFERENCES `Tila_Luokka` (`Tila_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
