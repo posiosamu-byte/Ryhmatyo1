@@ -1,29 +1,40 @@
-Projektityön Dokumentaatio
+Ryhmätyö Dokumentointi.
 
-Työ on tehty Visual Studio Codella, GitHubilla ja PHPmyAdminilla.
-Projektin Järjestys on tehty Teamsissa ja Trellossa.
+Luokkien varausjärjestelmä
+Tämä ohjelmisto on kehitetty luokkahuoneiden varauksien hallintaan ja seurantaan. Järjestelmän avulla voidaan rekisteröidä käyttäjät, varatut ajankohdat, varattavat luokat sekä niihin liittyvät kurssit.
 
-Projektin jäsenten työnjako
+Työkalut ja teknologiat
+Kehitysympäristö: Visual Studio Code
 
-Saku:
+Versiohallinta: GitHub
 
-Samu: Dokumentaatio ja Tietokanta
+Tietokannanhallinta: phpMyAdmin
 
-Jasu: 
+Kontitus: Docker Engine
 
---------------------------------------------------
+Projektinhallinta ja viestintä: Trello ja Microsoft Teams
 
-Asennusohjeet
+----------------------------------------------------------------------------------------------
 
-1. lataa tiedostot githubista
+Tiimi ja työnjako
 
-2. lataa dockerengine
+Saku: Front-end, Back-end ja CSS-tyylit
 
-3. lataa Visual Studio/Code
+Samu: Dokumentaatio ja tietokantarakenne
 
-4. käynnistä docker terminaalista
+Jasu: Testaus ja laadunvarmistus
 
-5. käynnistä ohjelma
+----------------------------------------------------------------------------------------------
 
---------------------------------------------------
+1. Asennus- ja käyttöohjeet
+Varmista ennen aloitusta, että koneellesi on asennettu Visual Studio Code ja Docker Engine.
 
+2. Lataa tiedostot: Kloonaa tai lataa projektitiedostot GitHubista paikalliselle koneellesi.
+
+3. Käynnistä Docker Engine: Varmista, että Docker on käynnissä taustalla.
+
+4. Avaa projekti: Avaa projektikansio Visual Studio Codessa.
+
+5. Käynnistä ohjelma: Avaa terminaali ja käynnistä sovelluskontit komennolla: docker compose up -d
+
+----------------------------------------------------------------------------------------------
